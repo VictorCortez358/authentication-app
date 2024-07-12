@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 
 @Injectable()
-export class UsersService {
+export class UsersServices {
   constructor (private prismaService: PrismaService) {}
 
   create(user: CreateUserDto): Promise<string>{
@@ -23,6 +23,12 @@ export class UsersService {
   findOne(id: number): Promise<User> {
     return this.prismaService.user.findUnique({
       where: { id }
+    });
+  }
+
+  findOneUserByEmail(email: string): Promise<User> {
+    return this.prismaService.user.findUnique({
+      where: { email }
     });
   }
 
