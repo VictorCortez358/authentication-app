@@ -8,7 +8,7 @@ import { User } from '@prisma/client';
 export class UsersServices {
   constructor (private prismaService: PrismaService) {}
 
-  create(user: CreateUserDto): Promise<string>{
+  async createUser(user: CreateUserDto): Promise<string>{
     const newUser = this.prismaService.user.create({
       data: user
     });
@@ -20,19 +20,19 @@ export class UsersServices {
     return Promise.resolve('User created');
   }
 
-  findOne(id: number): Promise<User> {
+  async findOneUser(id: number): Promise<User> {
     return this.prismaService.user.findUnique({
       where: { id }
     });
   }
 
-  findOneUserByEmail(email: string): Promise<User> {
+  async findOneUserByEmail(email: string): Promise<User> {
     return this.prismaService.user.findUnique({
       where: { email }
     });
   }
 
-  update(id: number, user: UpdateUserDto): Promise<string> {
+  async updateUser(id: number, user: UpdateUserDto): Promise<string> {
     const foundUser = this.prismaService.user.update({
       where: { id },
       data: user

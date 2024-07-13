@@ -22,7 +22,7 @@ export class AuthService {
     const salt = await bcrypt.genSalt();
     user.password = await bcrypt.hash(user.password, salt);
 
-    const newUser = this.userServices.create(user);
+    const newUser = this.userServices.createUser(user);
 
     if (!newUser) {
       return Promise.reject('User not created');
