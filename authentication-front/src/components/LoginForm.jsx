@@ -37,7 +37,7 @@ const LoginForm = () => {
 
     return (
         <>
-            <div className="flex flex-col items-center justify-center p-8 h-screen lg:border-gray-400 lg:border lg:rounded-lg lg:max-w-[450px] lg:p-12 lg:h-auto">
+            <div className="flex flex-col items-center justify-center p-8 h-screen lg:border-gray-400 lg:border lg:rounded-lg lg:w-1/3 lg:p-12 lg:h-auto">
                 <Image src={Icon} alt="DevChallenges Logo" className="mr-auto" />
                 <h2 className="text-xl font-semibold mt-4 lg:text-2xl">
                     Join thousands of learners from around the world
