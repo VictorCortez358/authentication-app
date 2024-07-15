@@ -8,10 +8,14 @@ import Profile from '../../public/profile.svg';
 import Group from '../../public/group.svg';
 import Logout from '../../public/logout.svg';
 import Up from '../../public/up.svg';
+import { useRouter } from 'next/navigation'
 
 
 
 const Header = () => {
+
+    
+    const router = useRouter();
 
     const Options = [
         {
@@ -39,8 +43,8 @@ const Header = () => {
     };
 
     return (
-        <div className='flex flex-row justify-between items-center w-full p-4'>
-            <Image src={Icon} alt='DevChallenges Logo' className='mr-auto' />
+        <div className='flex flex-row justify-between items-center w-full px-4 lg:p-4'>
+            <Image src={Icon} alt='DevChallenges Logo' className='mr-auto w-20 h-20 lg:w-auto lg:h-auto' />
             <div className='relative'>
                 <div className='flex flex-row justify-center items-center gap-4 cursor-pointer' onClick={toggleDropdown}>
                     <Image src={Avatar} alt='Profile' className='w-8 h-8 rounded-full' />
@@ -50,7 +54,9 @@ const Header = () => {
                 {isOpen && (
                     <div className='absolute right-0 mt-2 w-48 bg-white border rounded p-4'>
                         {Options.map((option, index) => (
-                            <div key={index} className='flex flex-row justify-start items-center px-2 rounded-md hover:bg-gray-100'>
+                            <div
+                                onClick={() => router.push(option.link)}
+                                key={index} className='flex flex-row justify-start items-center px-2 rounded-md hover:bg-gray-100'>
                                 <Image src={option.img} alt={option.label} className='w-6 h-6 rounded-full' />
                                 <a href='/profile' className='block px-4 py-2 text-xs text-gray-700'>{option.label}</a>
                             </div>
