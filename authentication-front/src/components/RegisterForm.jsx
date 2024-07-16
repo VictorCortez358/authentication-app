@@ -18,7 +18,7 @@ const normFile = (e) => {
       return e;
     }
     return e?.fileList;
-  };
+};
 
 
 const FormRegister = () => {

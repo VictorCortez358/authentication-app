@@ -1,25 +1,86 @@
 "use client";
 import Image from "next/image";
 import Icon from "../../public/devchallenges.svg";
-import { Input } from "antd";
-import EmailIcon from "../../public/email_icon.svg";
-import PasswordIcon from "../../public/password_icon.svg";
 import { useRouter } from "next/navigation";
+import Cookie from 'js-cookie';
+import { Form, Input } from "antd";
 
-const Form = () => {
+const onFinish = (router) => async (values) => {
+    try {
+        const response = await fetch("http://localhost:3000/auth/signin", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: values.email,
+                password: values.password,
+            }),
+        });
+
+        const data = await response.json();
+        if (data.access_token) {
+            Cookie.set('authToken', data.access_token, { expires: 7 });
+            router.push('/profile');
+        } else {
+            console.error('Login failed:', data.message);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+};
+
+const LoginForm = ({ router }) => {
     return (
-        <form className="flex flex-col items-start justify-center w-full mt-8 gap-4">
-            <Input
-                size="large"
-                placeholder="Email"
-                prefix={<Image src={EmailIcon} alt="Email Icon" />}
-            />
-            <Input
-                size="large"
-                placeholder="Password"
-                prefix={<Image src={PasswordIcon} alt="Password Icon" />}
-            />
-        </form>
+        <Form
+            name="basic"
+            style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                marginTop: '1rem'
+            }}
+            onFinish={onFinish(router)}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+
+        >
+            <Form.Item
+                name="email"
+                rules={[
+                    {
+                        required: true,
+                        message: 'Please input your name!',
+                    },
+                ]}
+            >
+                <Input placeholder='Name' />
+            </Form.Item>
+
+            <Form.Item
+                name="password"
+                rules={[
+                    {
+                        required: true,
+                        message: 'Please input your password!',
+                    },
+                ]}
+
+            >
+                <Input.Password
+                    placeholder='Password'
+                    type='password'
+                />
+            </Form.Item>
+
+            <Form.Item>
+                <button type="submit" className='w-full bg-blue-500 text-white font-semibold rounded-lg p-2 mt-8 text-sm'>Start coding now</button>
+            </Form.Item>
+        </Form>
     );
 };
 
@@ -32,7 +93,7 @@ const footer = () => {
     );
 };
 
-const LoginForm = () => {
+const Login = () => {
     const router = useRouter();
 
     return (
@@ -46,10 +107,7 @@ const LoginForm = () => {
                     Master web development by making real-life projects. There are
                     multiple paths for you to choose
                 </p>
-                <Form />
-                <button className="w-full bg-blue-500 text-white font-semibold rounded-lg p-2 mt-8 text-sm">
-                    Start coding now
-                </button>
+                <LoginForm router={router} />
                 <p className="text-xs text-gray-500 mt-4 lg:text-sm">
                     or continue with these social profile
                 </p>
@@ -71,4 +129,4 @@ const LoginForm = () => {
     );
 };
 
-export default LoginForm;
+export default Login;

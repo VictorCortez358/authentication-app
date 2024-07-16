@@ -13,10 +13,10 @@ export class AuthService {
   ) {}
   
   async signUp(user: CreateUserDto): Promise<string> {
-    const userExist = this.userServices.findOneUserByEmail(user.email);
 
+    const userExist = await this.userServices.findOneUserByEmail(user.email);
     if (userExist) {
-      return Promise.reject('User already exists');
+      return Promise.reject('User already exist');
     }
 
     const salt = await bcrypt.genSalt();
@@ -32,15 +32,22 @@ export class AuthService {
     }
   }
 
-  async signIn(email: string, pass: string): Promise<{ access_token: string }> {
+  async signIn(email: string, pass: string): Promise<{ access_token: string, message: string }> {
     const user = await this.userServices.findOneUserByEmail(email);
-    if (user?.password !== pass) {
+    if (!user) {
+      throw new Error('User not found');
+    }
+    
+
+    if (user?.password && !(await bcrypt.compare(pass, user.password))) {
       throw new UnauthorizedException();
     }
     
     const payload = { email: user.email, sub: user.id };
+    const token = this.jwtService.sign(payload);
     return {
-      access_token: this.jwtService.sign(payload)
+      message: 'User logged in',
+      access_token: token
     };
   }
 

@@ -1,7 +1,7 @@
 'use client'
-import EditProfile from '@/components/EditProfile';
-import Header from '@/components/Header';
-import ProfileInfo from '@/components/ProfileInfo';
+import EditProfile from '../../components/EditProfile.jsx';
+import Header from '../../components/Header.jsx';
+import ProfileInfo from '../../components/ProfileInfo.jsx';
 import Image from 'next/image';
 import { useState } from 'react';
 import Back from '../../../public/back.svg'

@@ -8,16 +8,10 @@ import { User } from '@prisma/client';
 export class UsersServices {
   constructor (private prismaService: PrismaService) {}
 
-  async createUser(user: CreateUserDto): Promise<string>{
-    const newUser = this.prismaService.user.create({
+  async createUser(user: CreateUserDto){
+    return this.prismaService.user.create({
       data: user
     });
-
-    if (!newUser) {
-      return Promise.reject('User not created');
-    }
-
-    return Promise.resolve('User created');
   }
 
   async findOneUser(id: number): Promise<User> {
