@@ -13,9 +13,9 @@ export class AuthController {
   @Post('signup')
   @UseInterceptors(FileInterceptor('photo', { storage }))
   signUp(@Body() user: CreateUserDto, @UploadedFile() image: Express.Multer.File) {
-    const imagePath = image.filename;
+    const imagePath = image.path;
 
-    return this.authService.signUp(user, { filename: imagePath });
+    return this.authService.signUp(user, imagePath);
   }
 
   @Post('signin')

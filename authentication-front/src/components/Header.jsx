@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation'
 
 
 
-const Header = () => {
+const Header = ({ user }) => {
     const router = useRouter();
 
     const Options = [
@@ -40,13 +40,19 @@ const Header = () => {
         setIsOpen(!isOpen);
     };
 
+    const getImageUrl = (path) => {
+        return `http://localhost:3000/${path.replace(/\\/g, "/")}`;
+    };
+
     return (
         <div className='flex flex-row justify-between items-center w-full px-4 lg:p-4'>
             <Image src={Icon} alt='DevChallenges Logo' className='mr-auto w-20 h-20 lg:w-auto lg:h-auto' />
             <div className='relative'>
                 <div className='flex flex-row justify-center items-center gap-4 cursor-pointer' onClick={toggleDropdown}>
-                    <Image src={Avatar} alt='Profile' className='w-8 h-8 rounded-full' />
-                    <p className='text-xs text-black'>Xanthe Neal</p>
+                    <img
+                        src={getImageUrl(user.photo)}
+                        alt='Profile' className='w-8 h-8 rounded-full' />
+                    <p className='text-xs text-black'>{user.name}</p>
                     <Image src={isOpen ? Up : Down} alt='Dropdown' className='w-4 h-4' />
                 </div>
                 {isOpen && (

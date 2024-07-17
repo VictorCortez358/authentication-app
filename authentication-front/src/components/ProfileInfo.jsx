@@ -1,5 +1,5 @@
-"use client";
-import React, { useState } from "react";
+import Image from "next/image";
+import React from "react";
 
 const footer = () => {
     return (
@@ -10,30 +10,30 @@ const footer = () => {
     );
 };
 
-const ProfileInfo = ({ setEdit }) => {
-    const initialUser = {
-        name: "Xanthe Neal",
-        email: "xanthe.neal@gmail.com",
-        photo: "https://randomuser.me/api/portraits/men/1.jpg", // URL de ejemplo válida
-        bio: "I am a software developer and a big fan of devchallenges...",
-        phone: "908249274292",
-        password: "**********",
-    };
-
-    const [user, setUser] = useState(initialUser);
-
+const ProfileInfo = ({ setEdit, user }) => {
     const handleEdit = () => {
         setEdit(true);
     };
+
+    const getImageUrl = (path) => {
+        return `http://localhost:3000/${path.replace(/\\/g, "/")}`;
+    };
+
+    const maskPassword = (password) => {
+        return "*".repeat(password.length);
+    };
+
 
     const userFields = [
         {
             label: "PHOTO",
             value: (
-                <img
-                    src={user.photo}
-                    alt="User Photo"
-                    className="w-16 h-16 rounded-full"
+                <Image
+                    src={getImageUrl(user.photo)}
+                    alt="Profile Photo"
+                    width={50}
+                    height={50}
+                    className="rounded-full"
                 />
             ),
         },
@@ -41,7 +41,7 @@ const ProfileInfo = ({ setEdit }) => {
         { label: "BIO", value: user.bio },
         { label: "PHONE", value: user.phone },
         { label: "EMAIL", value: user.email },
-        { label: "PASSWORD", value: user.password },
+        { label: "PASSWORD", value: maskPassword(user.password) },
     ];
 
     return (

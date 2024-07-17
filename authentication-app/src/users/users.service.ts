@@ -8,11 +8,11 @@ import { User } from '@prisma/client';
 export class UsersServices {
   constructor (private prismaService: PrismaService) {}
 
-  async createUser(user: CreateUserDto, photo: { filename: any; }): Promise<User> {
+  async createUser(user: CreateUserDto, photo: string): Promise<User> {
     return this.prismaService.user.create({
       data: {
         ...user,
-        photo: photo.filename
+        photo: photo
       }
     });
   }

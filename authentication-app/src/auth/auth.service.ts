@@ -12,7 +12,7 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
   
-  async signUp(user: CreateUserDto, photo: { filename: any; }): Promise<string> {
+  async signUp(user: CreateUserDto, photo: string): Promise<string> {
 
     const userExist = await this.userServices.findOneUserByEmail(user.email);
     if (userExist) {
