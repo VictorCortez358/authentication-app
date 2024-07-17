@@ -12,22 +12,22 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
   
-  async signUp(user: CreateUserDto): Promise<string> {
+  async signUp(user: CreateUserDto, photo: { filename: any; }): Promise<string> {
 
     const userExist = await this.userServices.findOneUserByEmail(user.email);
     if (userExist) {
-      return Promise.reject('User already exist');
+      return JSON.stringify('User already exist');
     }
 
     const salt = await bcrypt.genSalt();
     user.password = await bcrypt.hash(user.password, salt);
 
-    const newUser = this.userServices.createUser(user);
+    const newUser = this.userServices.createUser(user, photo);
 
     if (!newUser) {
-      return Promise.reject('User not created');
+      return JSON.stringify('User not created');
     }else{
-      return Promise.resolve('User created');
+      return JSON.stringify(newUser);
     
     }
   }

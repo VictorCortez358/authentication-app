@@ -1,15 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { signInDto } from './dto/sign-in.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { storage } from './utils/multer.config';
+
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  signUp(@Body() user: CreateUserDto) {
-    return this.authService.signUp(user);
+  @UseInterceptors(FileInterceptor('photo', { storage }))
+  signUp(@Body() user: CreateUserDto, @UploadedFile() image: Express.Multer.File) {
+    const imagePath = image.filename;
+
+    return this.authService.signUp(user, { filename: imagePath });
   }
 
   @Post('signin')
