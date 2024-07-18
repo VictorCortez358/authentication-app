@@ -35,12 +35,18 @@ export class AuthService {
   async signIn(email: string, pass: string): Promise<{ access_token: string, message: string }> {
     const user = await this.userServices.findOneUserByEmail(email);
     if (!user) {
-      throw new Error('User not found');
+      return {
+        message: 'User not found',
+        access_token: null
+      }
     }
     
 
     if (user?.password && !(await bcrypt.compare(pass, user.password))) {
-      throw new UnauthorizedException();
+      return {
+        message: 'Wrong password',
+        access_token: null
+      }
     }
     
     const payload = { email: user.email, sub: user.id };

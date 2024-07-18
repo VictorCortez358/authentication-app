@@ -1,15 +1,45 @@
 'use client'
 import React from 'react';
-import { Form, Input, Upload } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Form, Input } from 'antd';
+import { useState } from 'react';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
+import { useRouter } from 'next/navigation';
 
 
-const onFinish = (values) => {
-    console.log('Success:', values);
-};
 
-const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+const onFinish = (sub, router, file, setLoading, token) => async (values) => {
+    setLoading(true);
+    try {
+        const formData = new FormData();
+        formData.append('name', values.name);
+        formData.append('bio', values.bio);
+        formData.append('email', values.email);
+        formData.append('phone', values.phone);
+        formData.append('password', values.password);
+        if (file) {
+            formData.append('photo', file);
+        }
+
+        const response = await fetch(`http://localhost:3000/users/${sub}`, {
+            method: 'PATCH',
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData,
+        });
+
+        const data = await response.json();
+        setLoading(false);
+        if (data.error) {
+            alert(data.error);
+        } else {
+            router.push('/profile');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
 };
 
 const normFile = (e) => {
@@ -20,121 +50,108 @@ const normFile = (e) => {
 };
 
 
-const FormEdit = () => {
+const FormEdit = ({sub, user, token}) => {
+    const [file, setFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const router = useRouter();
+
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
+
+
     return (
-        <Form
-            name="basic"
-            style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                marginTop: '1rem'
-            }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-            autoComplete="off"
-            layout='vertical'
+        <>
+            {loading && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.7)', height: '100vh' }}>
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+                </div>
+            )}
 
-        >
-            <Form.Item  valuePropName="fileList" getValueFromEvent={normFile}>
-                <Upload action="/upload.do" listType="picture-card">
-                    <button
-                        style={{
-                            border: 0,
-                            background: 'none',
-                        }}
-                        type="button"
-                    >
-                        <PlusOutlined />
-                        <div
-                            style={{
-                                marginTop: 8,
-                            }}
-                        >
-                            Upload a photo
-                        </div>
-                    </button>
-                </Upload>
-            </Form.Item>
+            <Form
+                name="basic"
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginTop: '1rem'
+                }}
+                onFinish={onFinish(sub, router, file, setLoading, token)}
+                autoComplete="off"
+                layout='vertical'
 
-            <Form.Item
-                label="Name"
-                name="name"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Please input your name!',
-                    },
-                ]}
             >
-                <Input placeholder='Name' />
-            </Form.Item>
+                <Form.Item
+                    name="photo"
+                >
+                    <Input type="file" onChange={handleFileChange} />
+                </Form.Item>
 
-            <Form.Item
-                label="Bio"
-                name="bio">
-                <Input.TextArea placeholder='Bio' />
-            </Form.Item>
+                <Form.Item
+                    label="Name"
+                    name="name"
+                    initialValue={user.name}
+                >
+                    <Input placeholder='Name' />
+                </Form.Item>
 
-            <Form.Item
-                label="Phone"
-                name="phone"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Please input your phone!',
-                    },
-                ]}
-            >
+                <Form.Item
+                    label="Bio"
+                    name="bio"
+                    initialValue={user.bio}
+                >
+                    <Input.TextArea placeholder='Bio' />
+                </Form.Item>
 
-                <Input placeholder='phone' />
-            </Form.Item>
+                <Form.Item
+                    label="Phone"
+                    name="phone"
+                    initialValue={user.phone}
+                >
 
-            <Form.Item
-                label="Email"
-                name="email"
-                rules={[
-                    {
-                        type: 'email',
-                        message: 'The input is not valid E-mail!',
-                    },
-                    {
-                        required: true,
-                        message: 'Please input your E-mail!',
-                    },
-                ]}
-            >
+                    <Input placeholder='phone' />
+                </Form.Item>
 
-                <Input placeholder='Email' />
-            </Form.Item>
+                <Form.Item
+                    label="Email"
+                    name="email"
+                    initialValue={user.email}
+                    rules={[
+                        {
+                            type: 'email',
+                            message: 'The input is not valid E-mail!',
+                        }
+                    ]}
+                >
 
-            <Form.Item
-                label="Password"
-                name="password"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Please input your password!',
-                    },
-                ]}
-            >
-                <Input.Password placeholder='Password' />
-            </Form.Item>
+                    <Input placeholder='Email' />
+                </Form.Item>
 
-            <Form.Item>
-                <button type="submit" className='px-4 bg-blue-500 text-white font-semibold rounded-lg p-2 mt-8 text-base'>Save</button>
-            </Form.Item>
+                <Form.Item
+                    label="Password"
+                    name="password"
+                >
+                    <Input.Password placeholder='Password' />
+                </Form.Item>
 
-        </Form>
+                <Form.Item>
+                    <button type="submit" className='px-4 bg-blue-500 text-white font-semibold rounded-lg p-2 mt-2 text-base'>Save</button>
+                </Form.Item>
+
+            </Form>
+        </>
+
     );
 }
 
-const EditProfile = () => {
+const EditProfile = ({ sub, user, token }) => {
     return (
         <div className='w-full flex flex-col items-start justify-center my-4 px-4 lg:border lg:rounded-lg lg:w-6/12 lg:h-auto lg:p-8 lg:border-gray-300'>
             <h3 className='text-lg font-semibold'>Change Info</h3>
             <p className='text-xs text-gray-500'>Changes will be reflected to every services</p>
-            <FormEdit />
+            <FormEdit sub = {sub} user = {user} token = {token} />
         </div>
     );
 }

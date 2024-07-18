@@ -15,13 +15,15 @@ const ProfileInfo = ({ setEdit, user }) => {
         setEdit(true);
     };
 
+    const cutPassword = (password) => {
+        // acorta la contraseña para mostrar solo los primeros 4 caracteres solo eso nada mas
+        return password.slice(0, 4) + "...";
+    };
+
     const getImageUrl = (path) => {
         return `http://localhost:3000/${path.replace(/\\/g, "/")}`;
     };
 
-    const maskPassword = (password) => {
-        return "*".repeat(password.length);
-    };
 
 
     const userFields = [
@@ -41,7 +43,7 @@ const ProfileInfo = ({ setEdit, user }) => {
         { label: "BIO", value: user.bio },
         { label: "PHONE", value: user.phone },
         { label: "EMAIL", value: user.email },
-        { label: "PASSWORD", value: maskPassword(user.password) },
+        { label: "PASSWORD", value: cutPassword(user.password) },
     ];
 
     return (
@@ -49,14 +51,14 @@ const ProfileInfo = ({ setEdit, user }) => {
             <div className="flex flex-col items-center justify-center my-4 lg:border lg:rounded-lg lg:w-7/12 lg:h-auto">
                 <div className="flex flex-row justify-between items-center gap-4 w-full p-4 border-b">
                     <div className="flex flex-col items-start justify-center w-2/3 my-2">
-                        <h3 className="text-lg font-semibold">Profile</h3>
+                        <h3 className="text-base lg:text-lg font-semibold">Profile</h3>
                         <p className="text-xs text-gray-500">
                             Some info may be visible to other people
                         </p>
                     </div>
                     <button
                         onClick={handleEdit}
-                        className="text-gray-500 text-sm px-7 py-1 border rounded-md border-gray-500"
+                        className="text-gray-500 text-sm px-4 lg:px-7 py-1 border rounded-md border-gray-500"
                     >
                         Edit
                     </button>

@@ -3,9 +3,14 @@ import Image from "next/image";
 import Icon from "../../public/devchallenges.svg";
 import { useRouter } from "next/navigation";
 import Cookie from 'js-cookie';
-import { Form, Input } from "antd";
+import { Form, Input, message, Spin } from "antd";
+import { useState } from "react";
+import { LoadingOutlined } from '@ant-design/icons';
+import Link from "next/link";
 
-const onFinish = (router) => async (values) => {
+const onFinish = (router, setErrorFields, setLoading, messageApi) => async (values) => {
+    setLoading(true);
+    setErrorFields([]);  // Clear previous errors
     try {
         const response = await fetch("http://localhost:3000/auth/signin", {
             method: "POST",
@@ -19,68 +24,84 @@ const onFinish = (router) => async (values) => {
         });
 
         const data = await response.json();
+        setLoading(false);
         if (data.access_token) {
             Cookie.set('authToken', data.access_token, { expires: 7 });
             router.push('/profile');
         } else {
-            console.error('Login failed:', data.message);
+            setErrorFields([data.message]);
+            messageApi.error(data.message);  
         }
     } catch (error) {
+        setLoading(false);
+        setErrorFields([error.message]);
+        messageApi.error(error.message); 
         console.error(error);
     }
 };
 
-const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-};
-
 const LoginForm = ({ router }) => {
+    const [errorFields, setErrorFields] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
+
     return (
-        <Form
-            name="basic"
-            style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                marginTop: '1rem'
-            }}
-            onFinish={onFinish(router)}
-            onFinishFailed={onFinishFailed}
-            autoComplete="off"
-
-        >
-            <Form.Item
-                name="email"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Please input your name!',
-                    },
-                ]}
+        <>
+            {contextHolder}
+            {loading && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.7)', height: '100vh' }}>
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+                </div>
+            )}
+            <Form
+                name="basic"
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginTop: '1rem'
+                }}
+                onFinish={onFinish(router, setErrorFields, setLoading, messageApi)}
+                autoComplete="off"
             >
-                <Input placeholder='Name' />
-            </Form.Item>
+                <Form.Item
+                    id="email"
+                    name="email"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please input your email!',
+                        },
+                    ]}
+                >
+                    <Input placeholder='Email' />
+                </Form.Item>
 
-            <Form.Item
-                name="password"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Please input your password!',
-                    },
-                ]}
+                <Form.Item
+                    id="password"
+                    name="password"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please input your password!',
+                        },
+                    ]}
+                >
+                    <Input.Password
+                        placeholder='Password'
+                        type='password'
+                    />
+                </Form.Item>
 
-            >
-                <Input.Password
-                    placeholder='Password'
-                    type='password'
-                />
-            </Form.Item>
-
-            <Form.Item>
-                <button type="submit" className='w-full bg-blue-500 text-white font-semibold rounded-lg p-2 mt-8 text-sm'>Start coding now</button>
-            </Form.Item>
-        </Form>
+                <Form.Item>
+                    <button
+                        type="submit" className='w-full bg-blue-500 text-white font-semibold rounded-lg p-2 mt-8 text-sm'
+                    >
+                        Start coding now
+                    </button>
+                </Form.Item>
+            </Form>
+        </>
     );
 };
 
@@ -113,15 +134,12 @@ const Login = () => {
                 </p>
                 <p className="text-gray-500 mt-4 text-xs lg:text-sm">
                     Don't have an account yet?{" "}
-                    <a
-                        href="#"
+                    <Link
+                        href="/register" 
                         className="text-blue-500"
-                        onClick={() => {
-                            router.push("/register");
-                        }}
                     >
                         Register
-                    </a>
+                    </Link>
                 </p>
             </div>
             {footer()}

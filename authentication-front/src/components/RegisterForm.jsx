@@ -1,12 +1,14 @@
 'use client';
 import Image from 'next/image';
 import Icon from '../../public/devchallenges.svg';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Spin } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { LoadingOutlined } from '@ant-design/icons';
 
-const onFinish = (router, file) => async (values) => {
-    console.log('Success:', values);
+
+const onFinish = (router, file, setLoading) => async (values) => {
+    setLoading(true);
     try {
         const formData = new FormData();
         formData.append('name', values.name);
@@ -24,8 +26,7 @@ const onFinish = (router, file) => async (values) => {
         });
 
         const data = await response.json();
-        console.log(data);
-
+        setLoading(false);
         if (data.error) {
             alert(data.error);
         } else {
@@ -42,13 +43,20 @@ const onFinishFailed = (errorInfo) => {
 
 const FormRegister = ({ router }) => {
     const [file, setFile] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
 
     return (
-        <Form
+        <>
+            {loading && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.7)', height: '100vh' }}>
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+                </div>
+            )}
+            <Form
             name="basic"
             style={{
                 width: '100%',
@@ -56,7 +64,7 @@ const FormRegister = ({ router }) => {
                 flexDirection: 'column',
                 marginTop: '1rem',
             }}
-            onFinish={onFinish(router, file)}
+            onFinish={onFinish(router, file, setLoading)}
             onFinishFailed={onFinishFailed}
             autoComplete="off"
         >
@@ -138,6 +146,9 @@ const FormRegister = ({ router }) => {
                 </Button>
             </Form.Item>
         </Form>
+
+        </>
+        
     );
 };
 
