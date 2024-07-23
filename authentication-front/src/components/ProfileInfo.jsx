@@ -1,3 +1,4 @@
+import { message } from "antd";
 import Image from "next/image";
 import React from "react";
 
@@ -12,26 +13,23 @@ const footer = () => {
 
 const ProfileInfo = ({ setEdit, user }) => {
     const handleEdit = () => {
-        setEdit(true);
-    };
-
-    const cutPassword = (password) => {
-        // acorta la contraseña para mostrar solo los primeros 4 caracteres solo eso nada mas
-        return password.slice(0, 4) + "...";
+        if ( user.picture ) {    
+            message.error("You can't edit your profile because you signed up with Google");
+        }else{
+            setEdit(true);
+        }
     };
 
     const getImageUrl = (path) => {
         return `http://localhost:3000/${path.replace(/\\/g, "/")}`;
     };
 
-
-
     const userFields = [
         {
             label: "PHOTO",
             value: (
                 <Image
-                    src={getImageUrl(user.photo)}
+                    src= {user.picture || getImageUrl(user.photo)}
                     alt="Profile Photo"
                     width={50}
                     height={50}
@@ -40,10 +38,10 @@ const ProfileInfo = ({ setEdit, user }) => {
             ),
         },
         { label: "NAME", value: user.name },
-        { label: "BIO", value: user.bio },
-        { label: "PHONE", value: user.phone },
+        { label: "BIO", value: user.bio || "No bio" },
+        { label: "PHONE", value: user.phone || "No phone" },
         { label: "EMAIL", value: user.email },
-        { label: "PASSWORD", value: cutPassword(user.password) },
+        { label: "PASSWORD", value: "**********" || "No password" },
     ];
 
     return (

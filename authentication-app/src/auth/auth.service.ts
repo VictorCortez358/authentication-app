@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UsersServices } from 'src/users/users.service';
@@ -13,10 +13,9 @@ export class AuthService {
   ) {}
   
   async signUp(user: CreateUserDto, photo: string): Promise<string> {
-
     const userExist = await this.userServices.findOneUserByEmail(user.email);
     if (userExist) {
-      return JSON.stringify('User already exist');
+      throw new BadRequestException('User already exists');
     }
 
     const salt = await bcrypt.genSalt();
@@ -28,7 +27,6 @@ export class AuthService {
       return JSON.stringify('User not created');
     }else{
       return JSON.stringify(newUser);
-    
     }
   }
 
@@ -55,10 +53,16 @@ export class AuthService {
       message: 'User logged in',
       access_token: token
     };
+
   }
 
-  async signOut() {
-    return 'This action adds a new auth';
-  }
+  async googleLogin(user: any): Promise<string> {
+    if (!user) {
+      return 'No user from google';
+    }
 
+    const payload = { email: user.email, sub: user.sub, name: user.name, picture: user.picture };
+    const token = this.jwtService.sign(payload);
+    return token;
+  }
 }

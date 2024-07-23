@@ -56,8 +56,8 @@ const Header = ({ user }) => {
             <div className='relative'>
                 <div className='flex flex-row justify-center items-center gap-4 cursor-pointer' onClick={toggleDropdown}>
                     <img
-                        src={getImageUrl(user.photo)}
-                        alt='Profile' className='w-8 h-8 rounded-full' />
+                    src= {user.picture || getImageUrl(user.photo)}                        
+                    alt='Profile' className='w-8 h-8 rounded-full' />
                     <p className='text-xs lg:text-sm text-black'>{user.name}</p>
                     <Image src={isOpen ? Up : Down} alt='Dropdown' className='w-4 h-4' />
                 </div>

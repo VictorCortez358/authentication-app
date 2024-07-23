@@ -1,13 +1,13 @@
 'use client';
 import Image from 'next/image';
 import Icon from '../../public/devchallenges.svg';
-import { Form, Input, Button, Spin } from 'antd';
+import { Form, Input, Button, Spin, message } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 
 
-const onFinish = (router, file, setLoading) => async (values) => {
+const onFinish = (router, file, setLoading, messageApi) => async (values) => {
     setLoading(true);
     try {
         const formData = new FormData();
@@ -27,23 +27,25 @@ const onFinish = (router, file, setLoading) => async (values) => {
 
         const data = await response.json();
         setLoading(false);
-        if (data.error) {
-            alert(data.error);
+        if (response.ok) {
+            messageApi.success('User registered successfully 🎉');
+            setTimeout(() => {
+                router.push('/');
+            }, 2000);
         } else {
-            router.push('/');
+            messageApi.error(data.message);
         }
     } catch (error) {
-        console.error('Error:', error);
+        setLoading(false);
+        messageApi.error('An error occurred. Please try again later.');
     }
-};
-
-const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
 };
 
 const FormRegister = ({ router }) => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
+
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -51,6 +53,7 @@ const FormRegister = ({ router }) => {
 
     return (
         <>
+            {contextHolder}
             {loading && (
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.7)', height: '100vh' }}>
                     <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
@@ -64,8 +67,7 @@ const FormRegister = ({ router }) => {
                 flexDirection: 'column',
                 marginTop: '1rem',
             }}
-            onFinish={onFinish(router, file, setLoading)}
-            onFinishFailed={onFinishFailed}
+            onFinish={onFinish(router, file, setLoading, messageApi)}
             autoComplete="off"
         >
             <Form.Item

@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { Form, Input } from 'antd';
+import { Form, Input, message } from 'antd';
 import { useState } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 
 
 
-const onFinish = (sub, router, file, setLoading, token) => async (values) => {
+const onFinish = (sub, router, file, setLoading, token, messageApi) => async (values) => {
     setLoading(true);
     try {
         const formData = new FormData();
@@ -24,7 +24,6 @@ const onFinish = (sub, router, file, setLoading, token) => async (values) => {
         const response = await fetch(`http://localhost:3000/users/${sub}`, {
             method: 'PATCH',
             headers: {
-                "Content-Type": "application/json",
                 'Authorization': `Bearer ${token}`
             },
             body: formData,
@@ -33,37 +32,34 @@ const onFinish = (sub, router, file, setLoading, token) => async (values) => {
         const data = await response.json();
         setLoading(false);
         if (data.error) {
-            alert(data.error);
+            messageApi.error(data.error);
         } else {
-            router.push('/profile');
+            messageApi.success('Profile updated successfully');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500); 
         }
     } catch (error) {
-        console.error('Error:', error);
+        setLoading(false);
+        messageApi.error(error.message);
     }
-};
-
-const normFile = (e) => {
-    if (Array.isArray(e)) {
-        return e;
-    }
-    return e?.fileList;
 };
 
 
 const FormEdit = ({sub, user, token}) => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
 
     const router = useRouter();
-
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
 
-
     return (
         <>
+            {contextHolder}
             {loading && (
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.7)', height: '100vh' }}>
                     <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
@@ -78,7 +74,7 @@ const FormEdit = ({sub, user, token}) => {
                     flexDirection: 'column',
                     marginTop: '1rem'
                 }}
-                onFinish={onFinish(sub, router, file, setLoading, token)}
+                onFinish={onFinish(sub, router, file, setLoading, token, messageApi)}
                 autoComplete="off"
                 layout='vertical'
 
