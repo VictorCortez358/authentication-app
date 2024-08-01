@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -32,15 +32,6 @@ export class UsersServices {
   }
 
   async updateUser(id: number, user: UpdateUserDto): Promise<string> {
-    
-    const emailExist = await this.prismaService.user.findUnique({
-      where: { email: user.email }
-    });
-
-    if (emailExist) {
-      return JSON.stringify('Email already exists');
-    }
-
     if (user.password) {
       const salt = await bcrypt.genSalt();
       user.password = await bcrypt.hash(user.password, salt);
@@ -51,12 +42,9 @@ export class UsersServices {
         where: { id },
         data: user
       });
-      return JSON.stringify('User updated successfully');
+      return JSON.stringify('User updated');
     } catch (error) {
-      if (error.code === 'P2025') {
-        return JSON.stringify('User not found');
-      }
-      return JSON.stringify('An error occurred during the update');
+      throw new BadRequestException('User not updated');
     }
   }
   

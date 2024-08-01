@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import EditProfile from '../../components/EditProfile.jsx';
 import Header from '../../components/Header.jsx';
 import ProfileInfo from '../../components/ProfileInfo.jsx';
@@ -6,39 +6,53 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import Back from '../../../public/back.svg';
 import Cookies from 'js-cookie';
-import { Spin } from 'antd';
+import { Spin, message } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
+import { useRouter } from 'next/navigation';
+
 
 export default function Page() {
-    const token = Cookies.get('authToken')
+    const router = useRouter();
+    const token = Cookies.get('authToken');
     const [edit, setEdit] = useState(false);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const decodedToken = jwtDecode(token);
-
-        if (decodedToken.name) {
-            setUser(decodedToken);
-        } else {
+        if (token) {
+            const decodedToken = jwtDecode(token);
             const sub = decodedToken.sub;
-            const url = `http://localhost:3000/users/${sub}`;
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    setUser(data);
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
+            fetchUserData(sub, decodedToken);
+        } else {
+            router.push('/login');
         }
     }, [token]);
+
+    const fetchUserData = async (sub, decodedToken) => {
+        try {
+            if (decodedToken.name) {
+                setUser(decodedToken);
+            } else {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${sub}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setUser(data);
+                } else {
+                    throw new Error('Failed to fetch user data');
+                }
+            }
+        } catch (error) {
+            message.error('An error occurred while fetching user data.');
+            console.error('Error:', error);
+        }
+    };
 
     if (!user) {
         return (
@@ -53,8 +67,7 @@ export default function Page() {
             <Header user={user} />
             {edit ? (
                 <>
-                    <div
-                        className='w-auto flex flex-row items-center mr-auto px-4 lg:mr-0 lg:w-6/12 lg:p-4'>
+                    <div className='w-auto flex flex-row items-center mr-auto px-4 lg:mr-0 lg:w-6/12 lg:p-4'>
                         <div className='w-auto flex flex-row items-center cursor-pointer' onClick={() => setEdit(false)}>
                             <Image src={Back} width={20} height={20} alt="Back" />
                             <p className='text-sm font-semibold ml-1 text-blue-600 lg:text-lg'>Back</p>
@@ -72,5 +85,5 @@ export default function Page() {
                 </>
             )}
         </main>
-    )
+    );
 }

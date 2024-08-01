@@ -4,11 +4,8 @@ import { Form, Input, message } from 'antd';
 import { useState } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
-import { useRouter } from 'next/navigation';
 
-
-
-const onFinish = (sub, router, file, setLoading, token, messageApi) => async (values) => {
+const onFinish = (user, sub, file, setLoading, token, messageApi) => async (values) => {
     setLoading(true);
     try {
         const formData = new FormData();
@@ -16,7 +13,7 @@ const onFinish = (sub, router, file, setLoading, token, messageApi) => async (va
         formData.append('bio', values.bio);
         formData.append('email', values.email);
         formData.append('phone', values.phone);
-        formData.append('password', values.password);
+        formData.append('password', values.password || user.password);
         if (file) {
             formData.append('photo', file);
         }
@@ -32,7 +29,7 @@ const onFinish = (sub, router, file, setLoading, token, messageApi) => async (va
         const data = await response.json();
         setLoading(false);
         if (data.error) {
-            messageApi.error(data.error);
+            messageApi.error(data.message);
         } else {
             messageApi.success('Profile updated successfully');
             setTimeout(() => {
@@ -50,8 +47,6 @@ const FormEdit = ({sub, user, token}) => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
-
-    const router = useRouter();
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -74,7 +69,7 @@ const FormEdit = ({sub, user, token}) => {
                     flexDirection: 'column',
                     marginTop: '1rem'
                 }}
-                onFinish={onFinish(sub, router, file, setLoading, token, messageApi)}
+                onFinish={onFinish(user, sub, file, setLoading, token, messageApi)}
                 autoComplete="off"
                 layout='vertical'
 
@@ -142,12 +137,12 @@ const FormEdit = ({sub, user, token}) => {
     );
 }
 
-const EditProfile = ({ sub, user, token }) => {
+const EditProfile = ({ sub , user, token }) => {
     return (
-        <div className='w-full flex flex-col items-start justify-center my-4 px-4 lg:border lg:rounded-lg lg:w-6/12 lg:h-auto lg:p-8 lg:border-gray-300'>
-            <h3 className='text-lg font-semibold'>Change Info</h3>
+        <div className='w-full flex flex-col items-start justify-center my-4 px-4 lg:border lg:rounded-lg lg:w-6/12 lg:h-auto lg:border-gray-300'>
+            <h3 className='text-lg font-semibold mt-4'>Change Info</h3>
             <p className='text-xs text-gray-500'>Changes will be reflected to every services</p>
-            <FormEdit sub = {sub} user = {user} token = {token} />
+            <FormEdit sub={sub} user={user} token={token} />
         </div>
     );
 }

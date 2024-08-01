@@ -36,12 +36,6 @@ let UsersServices = class UsersServices {
         });
     }
     async updateUser(id, user) {
-        const emailExist = await this.prismaService.user.findUnique({
-            where: { email: user.email }
-        });
-        if (emailExist) {
-            return JSON.stringify('Email already exists');
-        }
         if (user.password) {
             const salt = await bcrypt.genSalt();
             user.password = await bcrypt.hash(user.password, salt);
@@ -51,13 +45,10 @@ let UsersServices = class UsersServices {
                 where: { id },
                 data: user
             });
-            return JSON.stringify('User updated successfully');
+            return JSON.stringify('User updated');
         }
         catch (error) {
-            if (error.code === 'P2025') {
-                return JSON.stringify('User not found');
-            }
-            return JSON.stringify('An error occurred during the update');
+            throw new common_1.BadRequestException('User not updated');
         }
     }
 };

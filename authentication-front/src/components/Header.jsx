@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Down from '../../public/down.svg';
 import Icon from '../../public/devchallenges.svg';
@@ -11,9 +11,7 @@ import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 
 
-
-
-const Header = ({ user }) => {
+const Header = ({user}) => {
     const router = useRouter();
 
     const deleteToken = () => {
@@ -39,7 +37,6 @@ const Header = ({ user }) => {
         }
     ];
 
-
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleDropdown = () => {
@@ -55,7 +52,8 @@ const Header = ({ user }) => {
             <Image src={Icon} alt='DevChallenges Logo' className='mr-auto w-20 h-20 lg:w-auto lg:h-auto' />
             <div className='relative'>
                 <div className='flex flex-row justify-center items-center gap-4 cursor-pointer' onClick={toggleDropdown}>
-                    <img
+                    <Image
+                    width={32} height = {32}
                     src= {user.picture || getImageUrl(user.photo)}                        
                     alt='Profile' className='w-8 h-8 rounded-full' />
                     <p className='text-xs lg:text-sm text-black'>{user.name}</p>

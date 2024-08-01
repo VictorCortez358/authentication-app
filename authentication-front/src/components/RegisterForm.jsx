@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import Image from 'next/image';
 import Icon from '../../public/devchallenges.svg';
 import { Form, Input, Button, Spin, message } from 'antd';
@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 
-
+// Function to handle form submission
 const onFinish = (router, file, setLoading, messageApi) => async (values) => {
     setLoading(true);
     try {
@@ -20,7 +20,7 @@ const onFinish = (router, file, setLoading, messageApi) => async (values) => {
             formData.append('photo', file);
         }
 
-        const response = await fetch('http://localhost:3000/auth/signup', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
             method: 'POST',
             body: formData,
         });
@@ -28,6 +28,7 @@ const onFinish = (router, file, setLoading, messageApi) => async (values) => {
         const data = await response.json();
         setLoading(false);
         if (response.ok) {
+            window.history.replaceState(null, null, '/');
             messageApi.success('User registered successfully 🎉');
             setTimeout(() => {
                 router.push('/');
@@ -41,14 +42,20 @@ const onFinish = (router, file, setLoading, messageApi) => async (values) => {
     }
 };
 
+// Form register component
 const FormRegister = ({ router }) => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
 
-
+    // Handle file change
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+        const selectedFile = e.target.files[0];
+        if (selectedFile && selectedFile.type.startsWith('image/')) {
+            setFile(selectedFile);
+        } else {
+            messageApi.error('Please upload a valid image file.');
+        }
     };
 
     return (
@@ -60,100 +67,99 @@ const FormRegister = ({ router }) => {
                 </div>
             )}
             <Form
-            name="basic"
-            style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                marginTop: '1rem',
-            }}
-            onFinish={onFinish(router, file, setLoading, messageApi)}
-            autoComplete="off"
-        >
-            <Form.Item
-                name="name"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Please input your name!',
-                    },
-                ]}
+                name="basic"
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginTop: '1rem',
+                }}
+                onFinish={onFinish(router, file, setLoading, messageApi)}
+                autoComplete="off"
             >
-                <Input placeholder="Name" />
-            </Form.Item>
-
-            <Form.Item name="bio">
-                <Input.TextArea placeholder="Bio" />
-            </Form.Item>
-
-            <Form.Item
-                name="email"
-                rules={[
-                    {
-                        type: 'email',
-                        message: 'The input is not valid E-mail!',
-                    },
-                    {
-                        required: true,
-                        message: 'Please input your E-mail!',
-                    },
-                ]}
-            >
-                <Input placeholder="Email" />
-            </Form.Item>
-
-            <Form.Item
-                name="phone"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Please input your phone number!',
-                    },
-                ]}
-            >
-                <Input placeholder="Phone" />
-            </Form.Item>
-
-            <Form.Item
-                name="password"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Please input your password!',
-                    },
-                ]}
-            >
-                <Input.Password placeholder="Password" />
-            </Form.Item>
-
-            <Form.Item
-                name="photo"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Please upload your photo!',
-                    },
-                ]}
-            >
-                <Input type="file" onChange={handleFileChange} />
-            </Form.Item>
-
-            <Form.Item>
-                <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="w-full bg-blue-500 text-white font-semibold rounded-lg p-2 mt-8 text-sm"
+                <Form.Item
+                    name="name"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please input your name!',
+                        },
+                    ]}
                 >
-                    Register now
-                </Button>
-            </Form.Item>
-        </Form>
+                    <Input placeholder="Name" />
+                </Form.Item>
 
+                <Form.Item name="bio">
+                    <Input.TextArea placeholder="Bio" />
+                </Form.Item>
+
+                <Form.Item
+                    name="email"
+                    rules={[
+                        {
+                            type: 'email',
+                            message: 'The input is not valid E-mail!',
+                        },
+                        {
+                            required: true,
+                            message: 'Please input your E-mail!',
+                        },
+                    ]}
+                >
+                    <Input placeholder="Email" />
+                </Form.Item>
+
+                <Form.Item
+                    name="phone"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please input your phone number!',
+                        },
+                    ]}
+                >
+                    <Input placeholder="Phone" />
+                </Form.Item>
+
+                <Form.Item
+                    name="password"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please input your password!',
+                        },
+                    ]}
+                >
+                    <Input.Password placeholder="Password" />
+                </Form.Item>
+
+                <Form.Item
+                    name="photo"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please upload your photo!',
+                        },
+                    ]}
+                >
+                    <Input type="file" onChange={handleFileChange} />
+                </Form.Item>
+
+                <Form.Item>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        className="w-full bg-blue-500 text-white font-semibold rounded-lg p-2 mt-8 text-sm"
+                    >
+                        Register now
+                    </Button>
+                </Form.Item>
+            </Form>
         </>
-        
     );
 };
 
+// Main register form component
 const RegisterForm = () => {
     const router = useRouter();
 

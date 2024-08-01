@@ -9,40 +9,38 @@ import { useState } from "react";
 import { LoadingOutlined } from "@ant-design/icons";
 import Link from "next/link";
 
-const onFinish =
-    (router, setErrorFields, setLoading, messageApi) => async (values) => {
-        setLoading(true);
-        setErrorFields([]);
-        try {
-            const response = await fetch("http://localhost:3000/auth/signin", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: values.email,
-                    password: values.password,
-                }),
-            });
+// Function to handle form submission
+const onFinish = (router, setErrorFields, setLoading, messageApi) => async (values) => {
+    setLoading(true);
+    setErrorFields([]);
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: values.email, password: values.password }),
+        });
 
-            const data = await response.json();
-            setLoading(false);
-            if (data.access_token) {
-                Cookie.set("authToken", data.access_token, { expires: 7 });
-                router.push("/profile");
-            } else {
-                setErrorFields([data.message]);
-                messageApi.error(data.message);
-            }
-        } catch (error) {
-            setLoading(false);
-            setErrorFields([error.message]);
-            messageApi.error(error.message);
-            console.error(error);
+        const data = await response.json();
+        setLoading(false);
+        if (data.access_token) {
+            Cookie.set("authToken", data.access_token, { expires: 7, secure: true, sameSite: 'Strict' });
+            window.history.replaceState( null, null, "/profile" );
+            window.location.replace("/profile");
+        } else {
+            setErrorFields([data.message]);
+            messageApi.error("Authentication failed. Please check your credentials and try again.");
         }
-    };
+    } catch (error) {
+        setLoading(false);
+        setErrorFields(["An error occurred. Please try again later."]);
+        messageApi.error("An error occurred. Please try again later.");
+        console.error(error);
+    }
+};
 
-
+// Login form component
 const LoginForm = ({ router }) => {
     const [errorFields, setErrorFields] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -71,24 +69,14 @@ const LoginForm = ({ router }) => {
             )}
             <Form
                 name="basic"
-                style={{
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    marginTop: "1rem",
-                }}
+                style={{ width: "100%", display: "flex", flexDirection: "column", marginTop: "1rem" }}
                 onFinish={onFinish(router, setErrorFields, setLoading, messageApi)}
                 autoComplete="off"
             >
                 <Form.Item
                     id="email"
                     name="email"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please input your email!",
-                        },
-                    ]}
+                    rules={[{ required: true, message: "Please input your email!" }]}
                 >
                     <Input placeholder="Email" />
                 </Form.Item>
@@ -96,12 +84,7 @@ const LoginForm = ({ router }) => {
                 <Form.Item
                     id="password"
                     name="password"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please input your password!",
-                        },
-                    ]}
+                    rules={[{ required: true, message: "Please input your password!" }]}
                 >
                     <Input.Password placeholder="Password" type="password" />
                 </Form.Item>
@@ -109,7 +92,7 @@ const LoginForm = ({ router }) => {
                 <Form.Item>
                     <button
                         type="submit"
-                        className="w-full bg-blue-500 text-white font-sans font-semibold rounded-lg p-2  text-sm"
+                        className="w-full bg-blue-500 text-white font-sans font-semibold rounded-lg p-2 text-sm"
                     >
                         Start coding now
                     </button>
@@ -119,7 +102,8 @@ const LoginForm = ({ router }) => {
     );
 };
 
-const footer = () => {
+// Footer component
+const Footer = () => {
     return (
         <div className="hidden h-0 lg:flex lg:flex-row lg:justify-between lg:items-center lg:w-1/3 lg:mt-2">
             <p className="text-xs text-gray-500 mt-4">Created by Victor Cortez</p>
@@ -128,12 +112,13 @@ const footer = () => {
     );
 };
 
+// Main login component
 const Login = () => {
     const router = useRouter();
 
     const handleGoogleLogin = async (event) => {
         event.preventDefault();
-        window.location.href = "http://localhost:3000/auth/callback/google";
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/callback/google`;
     }
 
     return (
@@ -144,27 +129,22 @@ const Login = () => {
                     Join thousands of learners from around the world
                 </h2>
                 <p className="font-sans font-[400] text-base text-title-gray mt-2 lg:text-base">
-                    Master web development by making real-life projects. There are
-                    multiple paths for you to choose
+                    Master web development by making real-life projects. There are multiple paths for you to choose
                 </p>
                 <LoginForm router={router} />
                 <span className="font-sans text-xs text-gray-500 mt-4 lg:text-sm">
                     or continue with these social profile
                 </span>
-                <Image
-                    onClick={handleGoogleLogin}
-                    src={Google}
-                    alt="DevChallenges Logo"
-                    className="cursor-pointer"
-                />
+                <Image onClick={handleGoogleLogin} src={Google} alt="Google Login" className="cursor-pointer" />
                 <p className="font-sans text-gray-500 mt-4 text-xs lg:text-sm">
-                    Don't have an account yet?{" "}
-                    <Link href="/register" className="text-blue-500">
+                    Don’t have an account yet?{" "}
+                    <Link 
+                        href="/register" className="text-blue-500">
                         Register
                     </Link>
                 </p>
             </div>
-            {footer()}
+            <Footer />
         </>
     );
 };
