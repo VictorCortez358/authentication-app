@@ -3,20 +3,20 @@
 <h1 align="center">Authentication-App </h1>
 
 <div align="center">
-   Solution for a challenge from  <a href="http://devchallenges.io" target="_blank">Devchallenges.io</a>.
+   Solution for a challenge from  <a href="https://legacy.devchallenges.io/" target="_blank">Devchallenges.io</a>.
 </div>
 
 <div align="center">
   <h3>
-    <a href="https://{your-demo-link.your-domain}">
+    <a href="https://authentication-front-smoky.vercel.app/">
       Demo
     </a>
     <span> | </span>
-    <a href="https://{your-url-to-the-solution}">
+    <a href="https://github.com/VictorCortez358/authentication-app">
       Solution
     </a>
     <span> | </span>
-    <a href="https://devchallenges.io/challenges/N1fvBjQfhlkctmwj1tnw">
+    <a href="https://legacy.devchallenges.io/challenges/N1fvBjQfhlkctmwj1tnw">
       Challenge
     </a>
   </h3>
@@ -37,7 +37,7 @@
 
 ## Overview
 
-![screenshot](https://user-images.githubusercontent.com/16707738/92399059-5716eb00-f132-11ea-8b14-bcacdc8ec97b.png)
+![screenshot](https://res.cloudinary.com/dtz4vdlgb/image/upload/v1722620282/preview_img_jpdvsv.png)
 
 
 ### Built With
@@ -62,7 +62,7 @@ To clone and run this application, you'll need [Git](https://git-scm.com) and [N
 
 ```bash
 # Clone this repository
-$ git clone https://github.com/your-user-name/your-project-name
+$ git clone https://github.com/VictorCortez358/authentication-app.git
 
 # Install dependencies
 $ npm install

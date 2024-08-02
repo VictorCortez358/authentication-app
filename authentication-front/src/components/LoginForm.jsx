@@ -26,8 +26,7 @@ const onFinish = (router, setErrorFields, setLoading, messageApi) => async (valu
         setLoading(false);
         if (data.access_token) {
             Cookie.set("authToken", data.access_token, { expires: 7, secure: true, sameSite: 'Strict' });
-            window.history.replaceState( null, null, "/profile" );
-            window.location.replace("/profile");
+            router.push("/profile");
         } else {
             setErrorFields([data.message]);
             messageApi.error("Authentication failed. Please check your credentials and try again.");
@@ -118,7 +117,7 @@ const Login = () => {
 
     const handleGoogleLogin = async (event) => {
         event.preventDefault();
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/callback/google`;
+        router.push(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`);
     }
 
     return (

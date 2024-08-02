@@ -28,7 +28,6 @@ const onFinish = (router, file, setLoading, messageApi) => async (values) => {
         const data = await response.json();
         setLoading(false);
         if (response.ok) {
-            window.history.replaceState(null, null, '/');
             messageApi.success('User registered successfully 🎉');
             setTimeout(() => {
                 router.push('/');
@@ -162,7 +161,6 @@ const FormRegister = ({ router }) => {
 // Main register form component
 const RegisterForm = () => {
     const router = useRouter();
-
     return (
         <div className="flex flex-col items-center justify-center p-8 h-screen lg:border-gray-400 lg:border lg:rounded-lg lg:w-1/3 lg:h-auto">
             <Image src={Icon} alt="DevChallenges Logo" className="mr-auto" />

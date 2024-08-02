@@ -44,7 +44,7 @@ const Header = ({user}) => {
     };
 
     const getImageUrl = (path) => {
-        return `http://localhost:3000/${path.replace(/\\/g, "/")}`;
+        return `${process.env.NEXT_PUBLIC_API_URL}/${path.replace(/\\/g, "/")}`;
     };
 
     return (

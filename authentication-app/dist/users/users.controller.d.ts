@@ -1,5 +1,6 @@
 import { UsersServices } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Response } from 'express';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersServices);
@@ -21,5 +22,5 @@ export declare class UsersController {
         password: string;
         photo: string;
     }>;
-    update(id: string, updateUserDto: UpdateUserDto, image: Express.Multer.File): Promise<string>;
+    update(id: string, updateUserDto: UpdateUserDto, image: Express.Multer.File, res: Response): void;
 }

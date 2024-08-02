@@ -4,8 +4,9 @@ import { Form, Input, message } from 'antd';
 import { useState } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
+import { useRouter } from 'next/navigation';
 
-const onFinish = (user, sub, file, setLoading, token, messageApi) => async (values) => {
+const onFinish = (user, sub, file, setLoading, token, messageApi, router) => async (values) => {
     setLoading(true);
     try {
         const formData = new FormData();
@@ -18,7 +19,7 @@ const onFinish = (user, sub, file, setLoading, token, messageApi) => async (valu
             formData.append('photo', file);
         }
 
-        const response = await fetch(`http://localhost:3000/users/${sub}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${sub}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -33,7 +34,7 @@ const onFinish = (user, sub, file, setLoading, token, messageApi) => async (valu
         } else {
             messageApi.success('Profile updated successfully');
             setTimeout(() => {
-                window.location.reload();
+                router.refresh();
             }, 1500); 
         }
     } catch (error) {
@@ -47,6 +48,7 @@ const FormEdit = ({sub, user, token}) => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
+    const router = useRouter();
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -69,7 +71,7 @@ const FormEdit = ({sub, user, token}) => {
                     flexDirection: 'column',
                     marginTop: '1rem'
                 }}
-                onFinish={onFinish(user, sub, file, setLoading, token, messageApi)}
+                onFinish={onFinish(user, sub, file, setLoading, token, messageApi, router)}
                 autoComplete="off"
                 layout='vertical'
 

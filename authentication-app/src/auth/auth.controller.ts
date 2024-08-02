@@ -37,9 +37,9 @@ export class AuthController {
       const user = req.user;
       const token = await this.authService.googleLogin(user);
       res.cookie('authToken', token);
-      res.redirect(`http://localhost:3001/profile`);
+      res.redirect(`${process.env.FRONTEND_URL}/profile`);
     } catch (error) {
-      res.redirect('http://localhost:3001/');
+      res.redirect(`${process.env.FRONTEND_URL}`);
     }
   }
 }

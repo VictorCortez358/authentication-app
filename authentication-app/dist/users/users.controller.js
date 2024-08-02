@@ -29,11 +29,14 @@ let UsersController = class UsersController {
     findbyEmail(email) {
         return this.usersService.findOneUserByEmail(email);
     }
-    update(id, updateUserDto, image) {
+    update(id, updateUserDto, image, res) {
         if (image) {
             updateUserDto.photo = image.path;
         }
-        return this.usersService.updateUser(+id, updateUserDto);
+        const userUpdate = this.usersService.updateUser(+id, updateUserDto);
+        if (userUpdate) {
+            res.redirect(`${process.env.FRONTEND_URL}/profile`);
+        }
     }
 };
 exports.UsersController = UsersController;
@@ -60,8 +63,9 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.UploadedFile)()),
+    __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_user_dto_1.UpdateUserDto, Object]),
+    __metadata("design:paramtypes", [String, update_user_dto_1.UpdateUserDto, Object, Object]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "update", null);
 exports.UsersController = UsersController = __decorate([
