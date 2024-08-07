@@ -117,7 +117,7 @@ const Login = () => {
 
     const handleGoogleLogin = async (event) => {
         event.preventDefault();
-        router.push(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`);
+        router.push(`${process.env.NEXT_PUBLIC_API_URL}/auth/callback/google`);
     }
 
     return (

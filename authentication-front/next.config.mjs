@@ -5,7 +5,7 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'authentication-app-bllk.onrender.com',
+                hostname: process.env.NEXT_PUBLIC_CDN_HOST,
                 pathname: '/uploads/**',
             },
             {
