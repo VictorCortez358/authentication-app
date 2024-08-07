@@ -8,7 +8,7 @@
 
 <div align="center">
   <h3>
-    <a href="https://authentication-front-smoky.vercel.app/">
+    <a href="https://authentication-front-nu.vercel.app/">
       Demo
     </a>
     <span> | </span>
